@@ -1,5 +1,5 @@
 # Smart Home Automation System
-### Co-Authors ares: Kaushal Khadka and Harikant Sharma
+### Co-Authors are: Kaushal Khadka and Harikant Sharma
 
 ## Table of Contents
 - [Overview](#overview)
