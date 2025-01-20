@@ -1,7 +1,3 @@
-Here’s an updated and expanded README file for your GitHub project, incorporating details from the project report:
-
----
-
 # Smart Home Automation System
 
 ## Table of Contents
