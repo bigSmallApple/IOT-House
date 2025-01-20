@@ -150,6 +150,3 @@ This project is licensed under the [MIT License](LICENSE).
 
 Feel free to contribute by submitting pull requests or reporting issues!
 
---- 
-
-Let me know if additional details or further modifications are needed!
