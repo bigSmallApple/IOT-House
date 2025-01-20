@@ -1,0 +1,418 @@
+ /* General Reset */
+ * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(145deg, #ff7eb3, #f6d365);
+    color: #fff;
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.dashboard {
+    display: flex;
+    width: 100%;
+}
+
+/* Special Tab (Top Icon) */
+.special-tab {
+    width: 60px;
+    /* Larger size for the top icon */
+    height: 60px;
+    background-color: #292942;
+    border-radius: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+    /* Space below the top icon */
+    cursor: pointer;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    position: absolute;
+    /* Fix its position */
+    top: 20px;
+    /* Position it at the top */
+}
+
+.special-tab:hover {
+    background-color: #4caf50;
+    /* Highlight on hover */
+}
+
+.special-tab:active {
+    transform: scale(1.2);
+    /* Blow-up effect */
+}
+
+/* Center Remaining Icons */
+.tab-bar {
+    width: 80px;
+    background-color: #1e1e2f;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    /* Center other icons */
+    height: 100%;
+    position: relative;
+    /* Allows absolute positioning for the top icon */
+    padding-top: 120px;
+    /* Space to avoid overlap with the top icon */
+}
+
+/* Regular Tabs */
+.tab {
+    width: 60px;
+    height: 60px;
+    background-color: #292942;
+    border-radius: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 10px 0;
+    cursor: pointer;
+    transition: transform 0.3s;
+}
+
+
+.tab-bar .tab:hover {
+    transform: scale(1.1);
+}
+
+.tab-bar .tab.active {
+    background-color: #4caf50;
+}
+
+.tab-bar .tab i {
+    font-size: 20px;
+}
+
+/* Main Content */
+.main-content {
+    flex: 1;
+    padding: 20px;
+    background-color: #1e1e2f;
+    border-radius: 20px 0 0 20px;
+    display: none;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+.main-content.active {
+    display: flex;
+}
+
+.main-content h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.dynamic-values {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    padding: 10px;
+}
+
+.dynamic-values div {
+    background: #292942;
+    padding: 15px;
+    border-radius: 15px;
+    text-align: center;
+    flex: 1;
+    margin: 0 10px;
+}
+
+.dynamic-values div span {
+    display: block;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.graph-container {
+    background: #292942;
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.graph-container canvas {
+    width: 100% !important;
+    max-width: 600px;
+    height: auto !important;
+}
+
+.status-indicators {
+    display: flex;
+    justify-content: space-between;
+}
+
+.status {
+    flex: 1;
+    background: #292942;
+    padding: 20px;
+    border-radius: 15px;
+    text-align: center;
+    margin: 0 10px;
+    transition: background 0.3s;
+}
+
+.status.active {
+    background: #4caf50;
+}
+
+
+
+/* Control Section */
+.control-section {
+    text-align: center;
+    margin-top: 20px;
+}
+
+#control-button {
+    padding: 10px 20px;
+    background: #292942;
+    border: none;
+    border-radius: 15px;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+#control-button.active {
+    background: #4caf50;
+    color: #fff;
+}
+
+#control-button:hover {
+    background: #383c56;
+}
+
+
+
+
+/* Garage Controls */
+.garage-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 60px;
+}
+
+.garage-controls button {
+    padding: 10px 20px;
+    background: #4caf50;
+    border: none;
+    border-radius: 10px;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.garage-controls button:hover {
+    background: #45a049;
+}
+
+/* Garage Icons */
+.icons {
+    display: flex;
+    gap: 20px;
+    font-size: 30px;
+    color: #fff;
+}
+
+#door-open-icon,
+#door-closed-icon {
+    opacity: 0.3;
+    transition: transform 0.5s ease, opacity 0.5s ease;
+}
+
+/* Open Animation */
+#door-open-icon.active {
+    opacity: 1;
+    transform: rotate(360deg);
+}
+
+/* Closed Animation */
+#door-closed-icon.active {
+    opacity: 1;
+    transform: translateY(10px);
+}
+
+/* Bedroom-specific Styles */
+
+/* Button for Person Icon */
+.button-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+#bedroom-person-btn {
+    padding: 10px 20px;
+    background: #292942;
+    border: none;
+    border-radius: 15px;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#bedroom-person-btn.active {
+    background: #4caf50;
+}
+
+/* LED Bulb */
+.led-container {
+    font-size: 50px;
+    color: gray;
+    transition: color 0.5s ease;
+}
+
+#led-bulb.active {
+    color: #fdd835;
+    /* Yellow bulb for ON */
+}
+
+/* Fan Status */
+#fan-status {
+    flex: 1;
+    background: #292942;
+    padding: 20px;
+    border-radius: 15px;
+    text-align: center;
+    margin: 0 10px;
+    transition: background 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+#fan-status.active {
+    background: #4caf50;
+}
+
+/* Chimney Status */
+#chimney-status {
+    flex: 1;
+    background: #292942;
+    padding: 20px;
+    border-radius: 15px;
+    text-align: center;
+    margin: 0 10px;
+    transition: background 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+#chimney-status i {
+    font-size: 24px;
+}
+
+#chimney-status.active {
+    background: #4caf50;
+}
+
+#chimney-status.inactive {
+    background: #ff5722; /* Chimney OFF - red color */
+}
+
+/* Fan Section */
+.fan-section {
+    text-align: center;
+    margin-top: 20px;
+}
+
+/* Fan Box (Square Container) */
+.fan-box {
+    width: 150px;
+    height: 150px;
+    margin: 0 auto;
+    background: linear-gradient(145deg, #2a2d3e, #1e1f2e);
+    border-radius: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2), -5px -5px 10px rgba(255, 255, 255, 0.1);
+    position: relative;
+}
+
+/* Fan */
+.fan-container {
+    width: 100px;
+    height: 100px;
+    position: relative;
+}
+
+.fan {
+    width: 100px;
+    height: 100px;
+    background: radial-gradient(circle, #333 50%, transparent 51%);
+    border-radius: 50%;
+    position: relative;
+    animation: spin 0s linear infinite; /* Initially stopped */
+    transition: animation 0.5s ease-in-out;
+}
+
+.fan.active {
+    animation: spin 1s linear infinite; /* Spins when active */
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Fan Blades */
+.blade {
+    position: absolute;
+    width: 10px;
+    height: 40px;
+    background: linear-gradient(to bottom, #4caf50, #388e3c);
+    top: 10px;
+    left: 50%;
+    transform-origin: bottom center;
+    border-radius: 10px;
+}
+
+.blade1 {
+    transform: translateX(-50%) rotate(0deg);
+}
+
+.blade2 {
+    transform: translateX(-50%) rotate(120deg);
+}
+
+.blade3 {
+    transform: translateX(-50%) rotate(240deg);
+}
+
+/* Fan Status Text */
+#fan-status-text {
+    margin-top: 10px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #fff;
+}

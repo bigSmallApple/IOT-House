@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Home Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+   
+</head>
+
+<body>
+    <div class="dashboard">
+        <!-- Left Tab Bar -->
+        <div class="tab-bar">
+            <div class="special-tab" id="top-icon">
+                <i class="fas fa-male"></i>
+            </div>
+            <div class="tab active" data-target="home-tab">
+                <i class="fas fa-home"></i>
+            </div>
+            <div class="tab" data-target="bedroom-tab">
+                <i class="fas fa-bed"></i>
+            </div>
+            <div class="tab" data-target="kitchen-tab">
+                <i class="fas fa-utensils"></i>
+            </div>
+        </div>
+
+
+        <!-- Home Content -->
+        <div class="main-content active" id="home-tab">
+            <h1>Home Dashboard</h1>
+            <div class="dynamic-values">
+                <div>
+                    <span id="temp-value">22°C</span>
+                    Temperature
+                </div>
+                <div>
+                    <span id="humidity-value">50%</span>
+                    Humidity
+                </div>
+            </div>
+            <div class="graph-container">
+                <canvas id="tempHumidityGraph"></canvas>
+            </div>
+            <div class="status-indicators">
+                <div class="status" id="ac-status">
+                    <span>AC ON</span>
+                </div>
+                <div class="status" id="heater-status">
+                    <span>Heater ON</span>
+                </div>
+            </div>
+            <div class="control-section">
+                <button id="control-button">Turn ON AC/Heater</button>
+            </div>
+            <div class="garage-controls">
+                <button id="garage-btn">Open Garage Door</button>
+                <div class="icons">
+                    <i id="door-open-icon" class="fas fa-door-open"></i>
+                    <i id="door-closed-icon" class="fas fa-door-closed"></i>
+                </div>
+            </div>
+            <div class="fan-section">
+                <div class="fan-box">
+                    <div class="fan-container">
+                        <div class="fan" id="home-fan">
+                            <div class="blade blade1"></div>
+                            <div class="blade blade2"></div>
+                            <div class="blade blade3"></div>
+                        </div>
+                    </div>
+                </div>
+                <p id="fan-status-text">Storeroom Ventilation OFF</p>
+            </div>
+            
+            
+            
+
+        </div>
+
+        <!-- Bedroom Content -->
+        <div class="main-content" id="bedroom-tab">
+            <h1>Bedroom Dashboard</h1>
+
+            <div class="dynamic-values">
+                <div>
+                    <span id="bedroom-temp-value">18°C</span>
+                    Temperature
+                </div>
+            </div>
+
+            <div class="graph-container">
+                <canvas id="bedroomTempGraph"></canvas>
+            </div>
+
+            <div class="status-indicators">
+                <div class="status" id="fan-status">
+                    <i class="fas fa-fan"></i>
+                    <span>Fan ON</span>
+                </div>
+            </div>
+
+            <div class="button-container">
+                <button id="bedroom-person-btn">
+                    <i class="fas fa-user"></i>
+                </button>
+                <div class="led-container">
+                    <i id="led-bulb" class="fas fa-lightbulb"></i>
+                </div>
+            </div>
+        </div>
+
+
+
+        <!-- Kitchen Content -->
+        <div class="main-content" id="kitchen-tab">
+            <h1>Kitchen Dashboard</h1>
+        
+            <div class="dynamic-values">
+                <div>
+                    <span id="kitchen-oxygen-value">25%</span>
+                    Oxygen Level
+                </div>
+            </div>
+        
+            <div class="graph-container">
+                <canvas id="kitchenOxygenGraph"></canvas>
+            </div>
+        
+            <div class="status-indicators">
+                <div class="status" id="chimney-status">
+                    <i class="fas fa-smog"></i>
+                    <span>Chimney ON</span>
+                </div>
+            </div>
+        </div>
+        
+
+        
+
+   
+</body>
+
+<script type="module">
+
+
+
+
+// Navigation Logic
+const tabs = document.querySelectorAll('.tab');
+const contents = document.querySelectorAll('.main-content');
+
+tabs.forEach((tab) => {
+    tab.addEventListener('click', () => {
+        // Remove active state from all tabs and contents
+        tabs.forEach((t) => t.classList.remove('active'));
+        contents.forEach((c) => c.classList.remove('active'));
+
+        // Add active state to clicked tab and corresponding content
+        tab.classList.add('active');
+        const target = tab.getAttribute('data-target');
+        document.getElementById(target).classList.add('active');
+    });
+});
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+import { getDatabase, ref, query, limitToLast, onChildAdded,update,onValue } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
+
+// Firebase Configuration
+const firebaseConfig = {
+    apiKey: "AIzaSyAiF-WaEXEUcyDSUKSzvq_-INOAJLqQ3s0",
+    authDomain: "smarthome-b2cca.firebaseapp.com",
+    projectId: "smarthome-b2cca",
+    storageBucket: "smarthome-b2cca.firebasestorage.app",
+    messagingSenderId: "756026887503",
+    appId: "1:756026887503:web:956b1d1f15a2272dbd893a",
+    measurementId: "G-B776FJFRV4"
+  };
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const database = getDatabase(app);
+
+// Fetch Latest Home Data
+const homeRef = ref(database, "home");
+onChildAdded(query(homeRef, limitToLast(1)), (snapshot) => {
+    const data = snapshot.val();
+    if (data) {
+        const temperature = data.temp;
+        const humidity = data.humidity;
+        const acStatus = data.ac_status;
+        const heaterStatus = data.heater_status;
+
+        // Update Temperature and Humidity Display
+        document.getElementById("temp-value").textContent = `${temperature}°C`;
+        document.getElementById("humidity-value").textContent = `${humidity}%`;
+
+        // Update Graph
+        tempHumidityGraph.data.datasets[0].data.shift();
+        tempHumidityGraph.data.datasets[0].data.push(temperature);
+        tempHumidityGraph.data.datasets[1].data.shift();
+        tempHumidityGraph.data.datasets[1].data.push(humidity);
+        tempHumidityGraph.update();
+
+        // Update AC/Heater Status
+        if (acHeaterEnabled) {
+            document.getElementById("ac-status").classList.toggle("active", acStatus === "ON");
+            document.getElementById("heater-status").classList.toggle("active", heaterStatus === "ON");
+        }
+
+        // Update Fan Logic
+        updateHomeFan(temperature);
+    }
+});
+
+const ctx = document.getElementById('tempHumidityGraph').getContext('2d');
+const tempHumidityGraph = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: Array(8).fill(""),
+        datasets: [
+            {
+                label: "Temperature (°C)",
+                data: Array(8).fill(22),
+                borderColor: "#ff6384",
+                borderWidth: 2,
+                fill: false,
+            },
+            {
+                label: "Humidity (%)",
+                data: Array(8).fill(50),
+                borderColor: "#36a2eb",
+                borderWidth: 2,
+                fill: false,
+            },
+        ],
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            x: {
+                ticks: { color: "#fff" },
+                grid: { color: "rgba(255, 255, 255, 0.1)" },
+            },
+            y: {
+                ticks: { color: "#fff" },
+                grid: { color: "rgba(255, 255, 255, 0.1)" },
+            },
+        },
+    },
+});
+console.log("Canvas Element:", document.getElementById("tempHumidityGraph"));
+console.log("Chart Initialization:", tempHumidityGraph);
+
+
+// Home Fan Logic
+function updateHomeFan(temp) {
+    const fanStatusText = document.getElementById("fan-status-text");
+    const homeFan = document.getElementById("home-fan");
+
+    if (temp >= 27) {
+        homeFan.classList.add("active");
+        fanStatusText.textContent = "Storeroom Ventilation ON";
+    } else {
+        homeFan.classList.remove("active");
+        fanStatusText.textContent = "Storeroom Ventilation OFF";
+    }
+}
+
+// Control Button Logic
+const controlButton = document.getElementById("control-button");
+let acHeaterEnabled = false;
+
+controlButton.addEventListener("click", () => {
+    acHeaterEnabled = !acHeaterEnabled;
+    controlButton.textContent = acHeaterEnabled ? "Turn OFF AC/Heater" : "Turn ON AC/Heater";
+    controlButton.classList.toggle("active", acHeaterEnabled);
+
+    // Send data to Firebase
+    const btnHVAC = acHeaterEnabled ? "ON" : "OFF";
+    const btnHVACRef = ref(database, "/");
+    update(btnHVACRef, { btnHVAC })
+        .then(() => {
+            console.log(`HVAC status successfully updated to: ${btnHVAC}`);
+        })
+        .catch((error) => {
+            console.error("Error updating HVAC status:", error);
+        });
+
+});
+
+
+
+
+// Garage Door Logic
+const garageButton = document.getElementById("garage-btn");
+const doorOpenIcon = document.getElementById("door-open-icon");
+const doorClosedIcon = document.getElementById("door-closed-icon");
+
+let isGarageOpen = false;
+
+garageButton.addEventListener("click", () => {
+    isGarageOpen = !isGarageOpen;
+
+    if (isGarageOpen) {
+        garageButton.textContent = "Close Garage Door";
+        doorOpenIcon.classList.add("active");
+        doorClosedIcon.classList.remove("active");
+    } else {
+        garageButton.textContent = "Open Garage Door";
+        doorOpenIcon.classList.remove("active");
+        doorClosedIcon.classList.add("active");
+    }
+
+     // Send data to Firebase
+     const btnGrage = isGarageOpen ? "OPEN" : "CLOSE";
+    const btnGrageRef = ref(database, "/");
+    update(btnGrageRef, { btnGrage })
+
+});
+
+
+ 
+
+// Bedroom Temperature and Fan Logic
+const bedroomTempGraphCtx = document.getElementById('bedroomTempGraph').getContext('2d');
+const bedroomTempGraph = new Chart(bedroomTempGraphCtx, {
+    type: 'line',
+    data: {
+        labels: ['1s', '2s', '3s', '4s', '5s', '6s', '7s', '8s'],
+        datasets: [
+            {
+                label: 'Temperature (°C)',
+                data: Array(8).fill(18),
+                borderColor: '#ff6384',
+                borderWidth: 2,
+                fill: false,
+                tension: 0.4,
+            },
+        ],
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                display: true,
+                position: 'top',
+                labels: {
+                    color: '#fff',
+                },
+            },
+        },
+        scales: {
+            x: {
+                ticks: {
+                    color: '#fff',
+                },
+                grid: {
+                    color: 'rgba(255, 255, 255, 0.1)',
+                },
+            },
+            y: {
+                ticks: {
+                    color: '#fff',
+                },
+                grid: {
+                    color: 'rgba(255, 255, 255, 0.1)',
+                },
+            },
+        },
+    },
+});
+
+// Bedroom Fan and LED Logic
+const fanStatus = document.getElementById('fan-status');
+const bedroomPersonBtn = document.getElementById('bedroom-person-btn');
+const ledBulb = document.getElementById('led-bulb');
+
+function updateBedroomData() {
+const temp = Math.floor(Math.random() * 10 + 16); // Random temp (16°C - 26°C)
+
+// Update graph data
+bedroomTempGraph.data.datasets[0].data.shift();
+bedroomTempGraph.data.datasets[0].data.push(temp);
+bedroomTempGraph.update();
+
+// Update temperature text
+document.getElementById('bedroom-temp-value').textContent = `${temp}°C`;
+
+// Fan logic
+const fanStatusText = fanStatus.querySelector("span");
+if (temp > 20) {
+fanStatus.classList.add('active');
+fanStatusText.textContent = "Fan ON"; // Update text to "Fan ON"
+} else {
+fanStatus.classList.remove('active');
+fanStatusText.textContent = "Fan OFF"; // Update text to "Fan OFF"
+}
+}
+
+    const temp = Math.floor(Math.random() * 10 + 16); // Random temp (16°C - 26°C)
+
+    // Update graph data
+    bedroomTempGraph.data.datasets[0].data.shift();
+    bedroomTempGraph.data.datasets[0].data.push(temp);
+    bedroomTempGraph.update();
+
+    // Update temperature text
+    document.getElementById('bedroom-temp-value').textContent = `${temp}°C`;
+
+    // Fan logic
+    if (temp > 20) {
+        fanStatus.classList.add('active');
+    } else {
+        fanStatus.classList.remove('active');
+    }
+
+
+// Person Button LED Logic
+bedroomPersonBtn.addEventListener('click', () => {
+    bedroomPersonBtn.classList.toggle('active');
+    ledBulb.classList.toggle('active');
+});
+
+// Update data every 2 seconds
+setInterval(updateBedroomData, 2000);
+
+
+// Kitchen Oxygen and Chimney Logic
+const kitchenOxygenGraphCtx = document.getElementById('kitchenOxygenGraph').getContext('2d');
+const kitchenOxygenGraph = new Chart(kitchenOxygenGraphCtx, {
+    type: 'line',
+    data: {
+        labels: ['1s', '2s', '3s', '4s', '5s', '6s', '7s', '8s'],
+        datasets: [
+            {
+                label: 'Oxygen Level (%)',
+                data: Array(8).fill(25),
+                borderColor: '#36a2eb',
+                borderWidth: 2,
+                fill: false,
+                tension: 0.4,
+            },
+        ],
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                display: true,
+                position: 'top',
+                labels: {
+                    color: '#fff',
+                },
+            },
+        },
+        scales: {
+            x: {
+                ticks: {
+                    color: '#fff',
+                },
+                grid: {
+                    color: 'rgba(255, 255, 255, 0.1)',
+                },
+            },
+            y: {
+                ticks: {
+                    color: '#fff',
+                },
+                grid: {
+                    color: 'rgba(255, 255, 255, 0.1)',
+                },
+            },
+        },
+    },
+});
+
+// Fetch and Update Kitchen Data
+const kitchenRef = ref(database, "kitchen"); // Reference to the kitchen node
+onValue(kitchenRef, (snapshot) => {
+    const data = snapshot.val();
+    if (data) {
+        const latestKey = Object.keys(data).pop(); // Get the latest timestamp key
+        const latestData = data[latestKey];
+
+        // Extract oxygen level and chimney status
+        const oxygenLevel = latestData.oxygenlevel || 0;
+        const chimneyStatus = latestData.chimneystatus || "OFF";
+
+        // Update Oxygen Level Display
+        document.getElementById("kitchen-oxygen-value").textContent = `${oxygenLevel.toFixed(2)}%`;
+
+        // Update Chimney Status
+        const chimneyElement = document.getElementById("chimney-status");
+        const chimneyStatusText = chimneyElement.querySelector("span");
+        if (chimneyStatus === "ON") {
+            chimneyElement.classList.add("active");
+            chimneyElement.classList.remove("inactive");
+            chimneyStatusText.textContent = "Chimney ON";
+        } else {
+            chimneyElement.classList.add("inactive");
+            chimneyElement.classList.remove("active");
+            chimneyStatusText.textContent = "Chimney OFF";
+        }
+    }
+});
+
+</script>
+
+</html>
