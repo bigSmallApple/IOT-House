@@ -23,7 +23,7 @@ tabs.forEach((tab) => {
 
 // Firebase Configuration
 const firebaseConfig = {
-    apiKey: "AIzaSyAiF-WaEXEUcyDSUKSzvq_-INOAJLqQ3s0",
+    apiKey: "mySecreteKey",
     authDomain: "smarthome-b2cca.firebaseapp.com",
     projectId: "smarthome-b2cca",
     storageBucket: "smarthome-b2cca.firebasestorage.app",
