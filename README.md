@@ -4,8 +4,6 @@ Here’s an updated and expanded README file for your GitHub project, incorporat
 
 # Smart Home Automation System
 
-![System Overview](Overall%20system%20design.drawio.png)
-
 ## Table of Contents
 - [Overview](#overview)
 - [Features](#features)
