@@ -24,11 +24,11 @@ tabs.forEach((tab) => {
 // Firebase Configuration
 const firebaseConfig = {
     apiKey: "mySecreteKey",
-    authDomain: "smarthome-b2cca.firebaseapp.com",
-    projectId: "smarthome-b2cca",
-    storageBucket: "smarthome-b2cca.firebasestorage.app",
-    messagingSenderId: "756026887503",
-    appId: "1:756026887503:web:956b1d1f15a2272dbd893a",
+    authDomain: "firebaseapp.com",
+    projectId: "smarthome",
+    storageBucket: "firebasestorage.app",
+    messagingSenderId: "mySecretId",
+    appId: "mySecretAppId",
     measurementId: "G-B776FJFRV4"
   };
 
