@@ -27,9 +27,9 @@ const firebaseConfig = {
     authDomain: "firebaseapp.com",
     projectId: "smarthome",
     storageBucket: "firebasestorage.app",
-    messagingSenderId: "mySecretId",
+    messagingSenderId: "mySecretMessagingId",
     appId: "mySecretAppId",
-    measurementId: "G-B776FJFRV4"
+    measurementId: "mySecretMeasurementId"
   };
 
 // Initialize Firebase
